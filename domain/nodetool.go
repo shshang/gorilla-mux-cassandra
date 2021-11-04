@@ -17,10 +17,12 @@ type NodetoolStatus struct {
 	Rack    string `json:"rack"`
 }
 
+//Nodetool is the primary port on server side
 type Nodetool interface {
 	RetrieveNodetoolStatus() ([]NodetoolStatus, error)
 }
 
+//Cassandra is the adaptor of Nodetool
 type Cassandra struct {
 	command string
 	args    []string
@@ -71,7 +73,8 @@ func (c Cassandra) RetrieveNodetoolStatus() ([]NodetoolStatus, error) {
 	return nodeStatus, nil
 }
 
-func NewCassandra() Cassandra {
+// NewCassandra is the helper function
+func NewNodetool() Cassandra {
 	command := "oc"
 	args := []string{"-n", "sysdigcloud", "exec", "sysdigcloud-cassandra-0", "--", "nodetool", "status"}
 
