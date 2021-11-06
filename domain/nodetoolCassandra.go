@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"bytes"
+	"github.com/shshang/gorilla-mux-cassandra/errs"
 	"log"
 	"os/exec"
 	"regexp"
@@ -12,12 +14,20 @@ type NodetoolCassandra struct {
 	args    []string
 }
 
-func (c NodetoolCassandra) RetrieveNodetoolStatus() ([]NodetoolStatus, error) {
+func (c NodetoolCassandra) RetrieveNodetoolStatus() ([]NodetoolStatus, *errs.AppError) {
 	cmd := exec.Command(c.command, c.args...)
-	output, err := cmd.Output()
+	var output bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &output
+	cmd.Stderr = &stderr
+
+	err := cmd.Run()
+
 	if err != nil {
-		log.Fatalf("cmd.Run() failed with %s\n", err)
-		return nil, err
+		// this is the log for the developer to debug api server
+		log.Printf("command %s with args %s returned error: %s", c.command, c.args, stderr.String())
+		// this is the error message returned to the end user
+		return nil, errs.NewInternalServerError("unexpected cassandra command error")
 	}
 
 	getFullName := func(s string) string {
@@ -37,7 +47,7 @@ func (c NodetoolCassandra) RetrieveNodetoolStatus() ([]NodetoolStatus, error) {
 		return status
 	}
 
-	nodeTexts := regexp.MustCompile(`(?m)^.*(([0-9a-fA-F]+-){4}([0-9a-fA-F]+)).*$`).FindAllString(string(output), -1)
+	nodeTexts := regexp.MustCompile(`(?m)^.*(([0-9a-fA-F]+-){4}([0-9a-fA-F]+)).*$`).FindAllString(output.String(), -1)
 	var nodeStatus []NodetoolStatus
 	for _, nodeText := range nodeTexts {
 		comps := regexp.MustCompile(`[[:space:]]+`).Split(nodeText, -1)
@@ -60,7 +70,7 @@ func (c NodetoolCassandra) RetrieveNodetoolStatus() ([]NodetoolStatus, error) {
 // NewNodetool is the helper function
 func NewNodetool() NodetoolCassandra {
 	command := "oc"
-	args := []string{"-n", "sysdigcloud", "exec", "sysdigcloud-cassandra-0", "--", "nodetool", "status"}
+	args := []string{"-n", "sysdigcloud", "exec", "sysdigcloud-cassandra", "--", "nodetool", "status"}
 
 	return NodetoolCassandra{command: command, args: args}
 }

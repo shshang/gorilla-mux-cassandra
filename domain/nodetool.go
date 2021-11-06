@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/shshang/gorilla-mux-cassandra/errs"
+
 type NodetoolStatus struct {
 	Status  string `json:"status"`
 	State   string `json:"state"`
@@ -13,5 +15,5 @@ type NodetoolStatus struct {
 
 //Nodetool is the primary port on server side
 type Nodetool interface {
-	RetrieveNodetoolStatus() ([]NodetoolStatus, error)
+	RetrieveNodetoolStatus() ([]NodetoolStatus, *errs.AppError)
 }

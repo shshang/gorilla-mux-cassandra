@@ -2,11 +2,12 @@ package service
 
 import (
 	"github.com/shshang/gorilla-mux-cassandra/domain"
+	"github.com/shshang/gorilla-mux-cassandra/errs"
 )
 
 //NodetoolService is the primary port on user side
 type NodetoolService interface {
-	NodetoolStatus() ([]domain.NodetoolStatus, error)
+	NodetoolStatusService() ([]domain.NodetoolStatus, *errs.AppError)
 }
 
 // DefaultNodetoolService is the implementation of NodetoolService, and has the dependency on server-side port, i.e. Nodetool interface
@@ -14,7 +15,7 @@ type DefaultNodetoolService struct {
 	nodetool domain.Nodetool
 }
 
-func (n DefaultNodetoolService) NodetoolStatus() ([]domain.NodetoolStatus, error) {
+func (n DefaultNodetoolService) NodetoolStatusService() ([]domain.NodetoolStatus, *errs.AppError) {
 	return n.nodetool.RetrieveNodetoolStatus()
 }
 
