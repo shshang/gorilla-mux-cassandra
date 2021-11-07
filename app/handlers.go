@@ -19,13 +19,13 @@ type NodetoolHandler struct {
 func (nh NodetoolHandler) GetNodetoolStatus(w http.ResponseWriter, r *http.Request) {
 	outputs, err := nh.service.NodetoolStatusService()
 	if err != nil {
-		logger.Info("NodetoolStatusService returned error: " + err.Message)
+		logger.Error("NodetoolStatusService returned error: " + err.Message)
 		writeResponse(w, err.Code, err)
 	} else {
 		jsonResponse, err := json.Marshal(outputs)
 
 		if err != nil {
-			logger.Info("failed to marshal go structure: " + err.Error())
+			logger.Error("failed to marshal go structure: " + err.Error())
 			writeResponse(w, http.StatusInternalServerError, "malformed response")
 		} else {
 			writeResponse(w, http.StatusOK, jsonResponse)

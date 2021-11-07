@@ -15,8 +15,12 @@ func init() {
 	config := zap.NewProductionConfig()
 
 	encoderConfig := zap.NewProductionEncoderConfig()
+	// change from "ts" to "timestamp"
 	encoderConfig.TimeKey = "timestamp"
+	// change time format from unix epoch to ISO8601
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	// disable stacktrace
+	encoderConfig.StacktraceKey = ""
 	config.EncoderConfig = encoderConfig
 
 	log, err = config.Build(zap.AddCallerSkip(1))

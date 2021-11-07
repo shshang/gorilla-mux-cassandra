@@ -26,7 +26,7 @@ func (c NodetoolCassandra) RetrieveNodetoolStatus() ([]NodetoolStatus, *errs.App
 
 	if err != nil {
 		// this is the log for the developer to debug api server
-		logger.Info("command " + c.command + " " + strings.Join(c.args, " ") + " returned error: " + stderr.String())
+		logger.Error("command " + c.command + " " + strings.Join(c.args, " ") + " returned error: " + stderr.String())
 		// this is the error message returned to the end user
 		return nil, errs.NewInternalServerError("unexpected cassandra command error")
 	}
