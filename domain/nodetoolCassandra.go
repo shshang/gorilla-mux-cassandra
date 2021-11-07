@@ -3,9 +3,10 @@ package domain
 import (
 	"bytes"
 	"github.com/shshang/gorilla-mux-cassandra/errs"
-	"log"
+	"github.com/shshang/gorilla-mux-cassandra/logger"
 	"os/exec"
 	"regexp"
+	"strings"
 )
 
 //Cassandra is the adaptor of Nodetool
@@ -25,7 +26,7 @@ func (c NodetoolCassandra) RetrieveNodetoolStatus() ([]NodetoolStatus, *errs.App
 
 	if err != nil {
 		// this is the log for the developer to debug api server
-		log.Printf("command %s with args %s returned error: %s", c.command, c.args, stderr.String())
+		logger.Info("command " + c.command + " " + strings.Join(c.args, " ") + " returned error: " + stderr.String())
 		// this is the error message returned to the end user
 		return nil, errs.NewInternalServerError("unexpected cassandra command error")
 	}

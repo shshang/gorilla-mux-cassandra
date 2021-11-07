@@ -2,8 +2,8 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/shshang/gorilla-mux-cassandra/logger"
 	"github.com/shshang/gorilla-mux-cassandra/service"
-	"log"
 	"net/http"
 )
 
@@ -19,13 +19,13 @@ type NodetoolHandler struct {
 func (nh NodetoolHandler) GetNodetoolStatus(w http.ResponseWriter, r *http.Request) {
 	outputs, err := nh.service.NodetoolStatusService()
 	if err != nil {
-		log.Printf("NodetoolStatusService returned error: %s\n", err.Message)
+		logger.Info("NodetoolStatusService returned error: " + err.Message)
 		writeResponse(w, err.Code, err)
 	} else {
 		jsonResponse, err := json.Marshal(outputs)
 
 		if err != nil {
-			log.Printf("failed to marshal go structure %s\n", err.Error())
+			logger.Info("failed to marshal go structure: " + err.Error())
 			writeResponse(w, http.StatusInternalServerError, "malformed response")
 		} else {
 			writeResponse(w, http.StatusOK, jsonResponse)
